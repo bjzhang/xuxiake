@@ -1,0 +1,6 @@
+config BR2_PACKAGE_XUXIAKE
+	bool "xuxiake"
+	help
+	  XU xiake operation system
+
+	  https://github.com/bjzhang/xuxiake
