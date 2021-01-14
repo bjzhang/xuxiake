@@ -1,4 +1,6 @@
 
+#include "xuxiake.h"
+
 /* SBI Extension IDs */
 #define SBI_EXT_0_1_CONSOLE_PUTCHAR             0x1
 
@@ -11,7 +13,7 @@
                 unsigned long __v = (unsigned long)(val);          \
                 __asm__ __volatile__("csrw 0x105, %0" \
                                      :                             \
-                                     : "rK"(__v)                   \
+                                     : "r"(__v)                   \
                                      : "memory");                  \
         })
 
@@ -41,18 +43,45 @@ void xxk_print(char *s)
 		xxk_putchar(*s++);
 }
 
-void exception_handler()
+void trap_handler(struct trap_regs *t)
 {
+	//get arg0 and ext from trap context
+	unsigned long scause;
+	unsigned long sepc;
+	char exception_code[0];
+
 	xxk_print("exception occur!\n");
+	//read SCAUSE(0x142)
+	__asm__ __volatile__("csrr %0, 0x142"
+			     : "+r" (scause)
+			     :
+			     : "memory");
+	if (scause == 8) {
+		xxk_print("supervisor software interrupt\n");
+		//call SBI
+		if (t->a7 == SBI_EXT_0_1_CONSOLE_PUTCHAR) {
+			sbi_ecall(t->a7, t->a0);
+		} else {
+			while(1);
+		}
+	} else {
+		scause = scause & (~0x80000000);
+		exception_code[0] = '0' + scause;
+		xxk_print("could not handle the scause(");
+		xxk_print(exception_code);
+		xxk_print(")\n");
+		while(1);
+	}
 }
 
+extern void  _trap_handler(void);
 void setup_exception_vector()
 {
         {
-                unsigned long __v = (unsigned long)(exception_handler);
+                unsigned long __v = (unsigned long)(_trap_handler);
                 __asm__ __volatile__("csrw 0x105, %0"
                                      :
-                                     : "rK"(__v)
+                                     : "r"(__v)
                                      : "memory");
         }
 }
@@ -68,7 +97,14 @@ void jump_to_user_mode()
                 unsigned long __v = (unsigned long)(user_program);
                 __asm__ __volatile__("csrw 0x141, %0"
                                      :
-                                     : "rK"(__v)
+                                     : "r"(__v)
+                                     : "memory");
+        }
+        {
+                __asm__ __volatile__("csrw 0x140, sp\n\t"	\
+				     "li  sp,  0x80400000"
+                                     :
+                                     :
                                      : "memory");
         }
 	__asm__ __volatile__("sret" : : );
