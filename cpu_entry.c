@@ -17,6 +17,7 @@
                                      : "memory");                  \
         })
 
+#define xxk_debug(a) while(0);
 int sbi_ecall(int ext, unsigned long arg0)
 {
 	int ret;
@@ -50,24 +51,31 @@ void trap_handler(struct trap_regs *t)
 	unsigned long sepc;
 	char exception_code[0];
 
-	xxk_print("exception occur!\n");
+	xxk_debug("exception occur!\n");
 	//read SCAUSE(0x142)
 	__asm__ __volatile__("csrr %0, 0x142"
 			     : "+r" (scause)
 			     :
 			     : "memory");
 	if (scause == 8) {
-		xxk_print("supervisor software interrupt\n");
+		xxk_debug("supervisor software interrupt\n");
 		//call SBI
 		if (t->a7 == SBI_EXT_0_1_CONSOLE_PUTCHAR) {
 			sbi_ecall(t->a7, t->a0);
+			//return to SEPC(0x141) + 4.
+			__asm__ __volatile__("csrr %0, 0x141\n\t"\
+					     "add %0, %0, 4\n\t"\
+					     "csrw 0x141, %0"
+					     : "+r" (sepc)
+					     :
+					     : "memory");
 		} else {
 			while(1);
 		}
 	} else {
 		scause = scause & (~0x80000000);
 		exception_code[0] = '0' + scause;
-		xxk_print("could not handle the scause(");
+		xxk_print("XXK: could not handle the scause(");
 		xxk_print(exception_code);
 		xxk_print(")\n");
 		while(1);
@@ -93,6 +101,7 @@ void user_program()
 
 void jump_to_user_mode()
 {
+	//sepc 0x141
         {
                 unsigned long __v = (unsigned long)(user_program);
                 __asm__ __volatile__("csrw 0x141, %0"
@@ -100,6 +109,7 @@ void jump_to_user_mode()
                                      : "r"(__v)
                                      : "memory");
         }
+	//sscratch 0x140
         {
                 __asm__ __volatile__("csrw 0x140, sp\n\t"	\
 				     "li  sp,  0x80400000"
@@ -108,18 +118,16 @@ void jump_to_user_mode()
                                      : "memory");
         }
 	__asm__ __volatile__("sret" : : );
-	xxk_print("should not here!\n");
+	xxk_print("XXK: should not here!\n");
 	while(1);
 }
 
 void cpu_entry(void)
 {
-	char *output = "Hello XU Xiake\n";
-
-	xxk_print(output);
+	xxk_print("XXK: Hello XU Xiake\n");
 	setup_exception_vector();
 	jump_to_user_mode();
-	xxk_print("exit!\n");
+	xxk_print("XXK: exit!\n");
 	while(1);
 }
 
