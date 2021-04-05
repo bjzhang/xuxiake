@@ -58,7 +58,7 @@ void trap_handler(struct trap_regs *t)
 			     :
 			     : "memory");
 	if (scause == 8) {
-		xxk_debug("supervisor software interrupt\n");
+		xxk_debug("Environment call from U-mode\n");
 		//call SBI
 		if (t->a7 == SBI_EXT_0_1_CONSOLE_PUTCHAR) {
 			sbi_ecall(t->a7, t->a0);
