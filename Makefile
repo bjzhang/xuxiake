@@ -1,5 +1,5 @@
 
-CROSS_COMPILE=/home/bamvor/sda6/software/riscv64-unknown-elf-gcc-8.3.0-2020.04.1-x86_64-linux-ubuntu14/bin/riscv64-unknown-elf-
+CROSS_COMPILE=~/works/source/rtthread-openamp-project-sources/buildroot/output/host/bin/riscv64-linux-
 
 all:
 	${CROSS_COMPILE}gcc -c -mcmodel=medany -march=rv64imafdc -mabi=lp64d -x assembler-with-cpp -ggdb -c -o head.o head.S -D__ASSEMBLY__
@@ -8,4 +8,4 @@ all:
 	${CROSS_COMPILE}objcopy -O binary xuxiake.elf xuxiake.bin
 
 qemu:
-	qemu-system-riscv64 -M virt -m 512M -smp 1 -bios /home/bamvor/works/source/RISC-V/opensbi/build/platform/generic/firmware/fw_jump.bin -kernel xuxiake.bin -nographic
+	qemu-system-riscv64 -M virt -m 512M -smp 1 -bios /home/bamvor/works/source/rtthread-openamp-project-sources/buildroot/output/images/fw_jump.bin -kernel xuxiake.bin -nographic
