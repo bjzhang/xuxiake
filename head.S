@@ -3,6 +3,7 @@
 
 .equ	USTACK,		0x80400000
 .equ	SSCRATCH,	0x80300000
+.equ	PAGE_TABLE,	0x80004000
 
 	.global		_start
 	.global		_trap_handler
@@ -11,6 +12,12 @@ _start:
 	csrw	sie, 0
 	csrw	sip, 0
 	li	sp,  SSCRATCH
+	li	x1, PAGE_TABLE
+	li	x2, 0x0000000001000001
+	sd	x2, 0(x1)
+	li	x2, 0x8000000000000000
+	or	x1, x1, x2
+	csrrw	x0, CSR_STAP, x1
 	call	cpu_entry
 
 _trap_handler:
