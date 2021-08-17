@@ -13,7 +13,7 @@ _start:
 	csrw	sip, 0
 	li	sp,  SSCRATCH
 	li	x1, PAGE_TABLE
-	li	x2, 0x0000000001000001
+	li	x2, 0x000000000100800f
 	sd	x2, 0(x1)
 	li	x2, 0x8000000000000000
 	or	x1, x1, x2

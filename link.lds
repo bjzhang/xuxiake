@@ -17,5 +17,5 @@ SECTIONS
     .start :
     {
         *(.start);
-    } > SRAM
+    }
 }
