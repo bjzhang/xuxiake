@@ -1,8 +1,8 @@
 
 #include "xuxiake.h"
 
-.equ	USTACK,		0x80400000
-.equ	SSCRATCH,	0x80300000
+.equ	USTACK,		0x45400000
+.equ	SSCRATCH,	0x45300000
 
 	.global		_start
 	.global		_trap_handler
