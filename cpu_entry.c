@@ -1,48 +1,23 @@
 
 #include "xuxiake.h"
-
-/* SBI Extension IDs */
-#define SBI_EXT_0_1_CONSOLE_PUTCHAR             0x1
+#include "lib.h"
+#include "gpio.h"
 
 /* CSR definition */
 #define CSR_STVEC                       0x105
 #define CSR_MEPC                        0x341
 
-#define csr_write(csr, val)                                        \
-        ({                                                         \
-                unsigned long __v = (unsigned long)(val);          \
-                __asm__ __volatile__("csrw 0x105, %0" \
-                                     :                             \
-                                     : "r"(__v)                   \
-                                     : "memory");                  \
-        })
+//#define csr_write(csr, val)                                        \
+//        ({                                                         \
+//                unsigned long __v = (unsigned long)(val);          \
+//                __asm__ __volatile__("csrw 0x105, %0" \
+//                                     :                             \
+//                                     : "r"(__v)                   \
+//                                     : "memory");                  \
+//        })
 
-#define xxk_debug(a) while(0);
-int sbi_ecall(int ext, unsigned long arg0)
-{
-	int ret;
-
-        register unsigned long a0 asm ("a0") = (unsigned long)(arg0);
-        register unsigned long a7 asm ("a7") = ext;
-        asm volatile ("ecall"
-                      : "+r" (a0)
-                      : "r" (a7)
-                      : "memory");
-        ret = a0;
-
-        return ret;
-}
-
-void xxk_putchar(char c)
-{
-	sbi_ecall(SBI_EXT_0_1_CONSOLE_PUTCHAR, c);
-}
-
-void xxk_print(char *s)
-{
-	while(*s)
-		xxk_putchar(*s++);
-}
+//#define xxk_debug(a) while(0);
+#define xxk_debug(a) xxk_print(a)
 
 void trap_handler(struct trap_regs *t)
 {
@@ -109,14 +84,16 @@ void jump_to_user_mode()
                                      : "r"(__v)
                                      : "memory");
         }
+	xxk_print("XXK: after set user program\n");
 	//sscratch 0x140
         {
                 __asm__ __volatile__("csrw 0x140, sp\n\t"	\
-				     "li  sp,  0x80400000"
+				     "li  sp,  0x45400000"
                                      :
                                      :
                                      : "memory");
         }
+	xxk_print("XXK: after set sscratch\n");
 	__asm__ __volatile__("sret" : : );
 	xxk_print("XXK: should not here!\n");
 	while(1);
@@ -125,7 +102,9 @@ void jump_to_user_mode()
 void cpu_entry(void)
 {
 	xxk_print("XXK: Hello XU Xiake\n");
+	gpio_test();
 	setup_exception_vector();
+	xxk_print("XXK: after set vector\n");
 	jump_to_user_mode();
 	xxk_print("XXK: exit!\n");
 	while(1);
