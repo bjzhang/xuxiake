@@ -1,6 +1,5 @@
 
-BUILDROOT_OUTPUT ?= ~/works/source/rtthread-openamp-project-sources/buildroot-src/output
-CROSS_COMPILE ?= ${BUILDROOT_OUTPUT}/host/bin/riscv64-linux-
+CROSS_COMPILE ?= riscv64-unknown-elf-
 
 CFLAGS=-Wall
 all:
