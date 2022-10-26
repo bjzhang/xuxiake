@@ -16,9 +16,6 @@
 //                                     : "memory");                  \
 //        })
 
-//#define xxk_debug(a) while(0);
-#define xxk_debug(a) xxk_print(a)
-
 void trap_handler(struct trap_regs *t)
 {
 	//get arg0 and ext from trap context

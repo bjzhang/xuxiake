@@ -2,15 +2,25 @@
 #ifndef __LIB_H__
 #define __LIB_H__
 
-#include <sys/errno.h>
+#include <type.h>
+/**
+ * bit ops
+ */
+#define SET_BITS(dst, val, mask, shift)			\
+{							\
+	(dst) = (dst) & (~((mask) << (shift)));		\
+	(dst) = (dst) | (((mask) & (val)) << (shift));	\
+}
 
-/* SBI Extension IDs */
-#define SBI_EXT_0_1_CONSOLE_PUTCHAR             0x1
-
-int sbi_ecall(int ext, unsigned long arg0);
+#define GET_BITS(src, val, mask, shift)			\
+{							\
+	(val) = (src) >> (shift);			\
+	(val) = (val) & (mask);				\
+}
 
 void xxk_putchar(char c);
 void xxk_print(char *s);
 void xxk_print_hex(unsigned int num);
+void memcpy(void *dst, void *src, s32 size);
 
 #endif /* #ifndef __LIB_H__ */

@@ -1,7 +1,8 @@
 
-#include "xuxiake.h"
+#include <xuxiake.h>
+#include <asm.h>
 
-.equ	STACK,		0x45300000
+.equ	STACK,		SYS_STACK_TOP
 
 	.global		_start
 	.global		_vectors

@@ -26,15 +26,6 @@ enum gpio_t {
 	GPIO_OUTPUT,
 };
 
-//#define DEBUG
-#ifdef DEBUG
-#define xxk_debug(a) xxk_print(a)
-#define xxk_debug_hex(a) xxk_print_hex(a)
-#else
-#define xxk_debug(a) while(0);
-#define xxk_debug_hex(a) while(0);
-#endif /* #ifdef DEBUG */
-
 //type: input, output, other function
 //Initialize gpio as specific port, num and type
 static int gpio_init_D1(enum gpio_port port, u32 num, enum gpio_t type);

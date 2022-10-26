@@ -1,5 +1,5 @@
 
-#include "lib.h"
+#include <lib.h>
 
 void xxk_print(char *s)
 {
@@ -7,7 +7,7 @@ void xxk_print(char *s)
 		xxk_putchar(*s++);
 }
 
-void xxk_print_hex(unsigned int num)
+void xxk_print_hex(u32 num)
 {
 	int i;
 	int n;
@@ -23,5 +23,20 @@ void xxk_print_hex(unsigned int num)
 			xxk_putchar(' ');
 
 	}
+}
+
+void memcpy(void *dst, void *src, s32 size)
+{
+	int i;
+	u8 *__dst = dst;
+	u8 *__src = src;
+
+	if (size < 0)
+		return;
+
+	for (i = 0; i < size; i++) {
+		*(__dst++) = *(__src++);
+	}
+
 }
 

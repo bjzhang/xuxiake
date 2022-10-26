@@ -5,7 +5,12 @@
 #define CSR_STAP	0x180
 #define TRAP_REGS_SIZE	(35*8)
 
+/* SBI Extension IDs */
+#define SBI_EXT_0_1_CONSOLE_PUTCHAR             0x1
+
 #ifndef __ASSEMBLY__
+int sbi_ecall(int ext, unsigned long arg0);
+
 /* reference opensbi/include/sbi/sbi_trap.h */
 /** Representation of register state at time of trap/interrupt */
 struct trap_regs {
