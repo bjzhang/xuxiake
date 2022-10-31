@@ -50,19 +50,23 @@ static void user_program(void)
 }
 #endif /* #ifdef CONFIG_USERSPACE`*/
 
-void svc_handler(unsigned long esr, struct trap_regs *t)
+s32 svc_handler(unsigned long esr, struct trap_regs *t)
 {
 	char *str = NULL;
+	int is_handled = 0;
+
 	xxk_debug("SVC from aarch64 EE\n");
 	if (t->x8 == 64) {
 		xxk_debug("write syscall\n");
 		str = (char*)t->x1;
 		xxk_print(str);
+		is_handled = 1;
 	} else {
 		xxk_print("ERROR: could not handle this syscall: ");
 		xxk_print_hex(t->x8);
 		xxk_print("\n");
 	}
+	return is_handled;
 }
 
 
@@ -93,7 +97,7 @@ void trap_handler(unsigned long esr, struct trap_regs *t)
 #endif /* #ifdef CONFIG_MMU */
 		break;
 	case EC_SVC64:
-		svc_handler(esr, t);
+		is_handled = svc_handler(esr, t);
 		break;
 	default:
 		xxk_print("Do not regconize this exeption!\n");
