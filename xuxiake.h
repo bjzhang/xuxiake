@@ -5,11 +5,12 @@
 #include <lib.h>
 
 #ifdef DEBUG
+#warning "DEBUG mode: it may lead to lots of output"
 #define xxk_debug(str) xxk_print(str)
 #define xxk_debug_hex(hex) xxk_print_hex(hex)
 #else
-#define xxk_debug(str) while(0);
-#define xxk_debug_hex(hex) while(0);
+#define xxk_debug(str) ({while(0);})
+#define xxk_debug_hex(hex) ({while(0);})
 #endif /* ifdef DEBUG */
 
 #define xxk_info(str) xxk_print(str)
