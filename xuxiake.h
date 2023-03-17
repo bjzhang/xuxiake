@@ -7,17 +7,21 @@
 #ifdef DEBUG
 #warning "DEBUG mode: it may lead to lots of output"
 #define xxk_debug(str) xxk_print(str)
-#define xxk_debug_hex(hex) xxk_print_hex(hex)
+#define xxk_debug_hex32(hex) xxk_print_hex32(hex)
+#define xxk_debug_hex64(hex) xxk_print_hex64(hex)
 #else
 #define xxk_debug(str) ({while(0);})
-#define xxk_debug_hex(hex) ({while(0);})
+#define xxk_debug_hex32(hex) ({while(0);})
+#define xxk_debug_hex64(hex) ({while(0);})
 #endif /* ifdef DEBUG */
 
 #define xxk_info(str) xxk_print(str)
-#define xxk_info_hex(hex) xxk_print_hex(hex)
+#define xxk_info_hex32(hex) xxk_print_hex32(hex)
+#define xxk_info_hex64(hex) xxk_print_hex64(hex)
 
 #define xxk_error(str) xxk_print(str)
-#define xxk_error_hex(hex) xxk_print_hex(hex)
+#define xxk_error_hex32(hex) xxk_print_hex32(hex)
+#define xxk_error_hex64(hex) xxk_print_hex64(hex)
 
 //TODO: It is more clearer that if define _vectors as array
 extern void _vectors(void);

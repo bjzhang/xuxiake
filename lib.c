@@ -12,7 +12,6 @@ void xxk_print_hex(u32 num)
 	int i;
 	int n;
 
-	xxk_print("0x");
 	for (i = (sizeof(num) * 8) - 4; i >= 0; i-=4) {
 		n = (num >> i & 0xf);
 		if (n >= 0 && n <= 9)
@@ -23,6 +22,19 @@ void xxk_print_hex(u32 num)
 			xxk_putchar(' ');
 
 	}
+}
+
+void xxk_print_hex32(u32 num)
+{
+	xxk_print("0x");
+	xxk_print_hex(num);
+}
+
+void xxk_print_hex64(u64 num)
+{
+	xxk_print("0x");
+	xxk_print_hex(num >> 32);
+	xxk_print_hex(num & 0xffffffff);
 }
 
 void memcpy(void *dst, void *src, s32 size)

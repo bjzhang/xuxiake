@@ -399,6 +399,9 @@ static s32 map_memory_l1_block(u64 vaddr, u64 paddr, u64 size, enum memory_type 
 	}
 	SET_BITS(entry, t, PT_L1_ATTR_INDX_MASK, PT_L1_ATTR_INDX_SHIFT);
 
+	xxk_debug("entry is ");
+	xxk_debug_hex64(entry);
+	xxk_debug("\n");
 	*entryp = entry;
 	dsb_sy();
 	return 0;
@@ -505,7 +508,7 @@ s32 da_handler(unsigned long esr, struct trap_regs *t)
 		}
 		GET_BITS(esr, srt, ESR_ISS_DA_L_SRT_MASK, ESR_ISS_DA_L_SRT_SHIFT);
 		xxk_debug("fault register is 0x");
-		xxk_debug_hex(srt);
+		xxk_debug_hex64(srt);
 		xxk_debug("\n");
 	}
 	GET_BITS(esr, far_is_not_valid, ESR_ISS_DA_L_FNV_MASK, ESR_ISS_DA_L_FNV_SHIFT);
@@ -514,7 +517,7 @@ s32 da_handler(unsigned long esr, struct trap_regs *t)
 	} else {
 		xxk_debug("fault address is valid ");
 		far = get_far();
-		xxk_debug_hex(far);
+		xxk_debug_hex32(far);
 		xxk_debug("\n");
 	}
 	GET_BITS(esr, is_write, ESR_ISS_DA_L_WNR_MASK, ESR_ISS_DA_L_WNR_SHIFT);
@@ -528,7 +531,7 @@ s32 da_handler(unsigned long esr, struct trap_regs *t)
 	GET_BITS(esr, dfsc_type, ESR_ISS_DA_L_DFSC_TYPE_MASK, ESR_ISS_DA_L_DFSC_TYPE_SHIFT);
 	xxk_debug("CAUTION: may some level is not actually exist\n");
 	xxk_debug("dfsc: 0x");
-	xxk_print_hex(dfsc);
+	xxk_print_hex32(dfsc);
 	xxk_debug(", type: ");
 	switch (dfsc_type){
 	case ESR_ISS_DA_L_DFSC_ADDR_SIZE:
@@ -550,7 +553,7 @@ s32 da_handler(unsigned long esr, struct trap_regs *t)
 		break;
 	}
 	xxk_debug(", level: ");
-	xxk_debug_hex(dfsc_level);
+	xxk_debug_hex32(dfsc_level);
 	xxk_debug("\n");
 	return is_handled;
 }
@@ -586,7 +589,7 @@ s32 ia_handler(unsigned long esr, struct trap_regs *t)
 	} else {
 		xxk_debug("fault address is valid ");
 		far = get_far();
-		xxk_debug_hex(far);
+		xxk_debug_hex64(far);
 		xxk_debug("\n");
 	}
 	GET_BITS(esr, ifsc, ESR_ISS_IA_L_IFSC_MASK, ESR_ISS_IA_L_IFSC_SHIFT);
@@ -594,7 +597,7 @@ s32 ia_handler(unsigned long esr, struct trap_regs *t)
 	GET_BITS(esr, ifsc_type, ESR_ISS_IA_L_IFSC_TYPE_MASK, ESR_ISS_IA_L_IFSC_TYPE_SHIFT);
 	xxk_debug("CAUTION: may some level is not actually exist\n");
 	xxk_debug("ifsc: 0x");
-	xxk_print_hex(ifsc);
+	xxk_print_hex32(ifsc);
 	xxk_debug(", type: ");
 	switch (ifsc_type){
 	case ESR_ISS_IA_L_IFSC_ADDR_SIZE:
@@ -616,7 +619,7 @@ s32 ia_handler(unsigned long esr, struct trap_regs *t)
 		break;
 	}
 	xxk_debug(", level: ");
-	xxk_debug_hex(ifsc_level);
+	xxk_debug_hex32(ifsc_level);
 	xxk_debug("\n");
 	return is_handled;
 }

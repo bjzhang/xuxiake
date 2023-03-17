@@ -20,7 +20,7 @@ void cpu_entry(void)
 	copy_user_program();
 	jump_to_user_mode();
 #endif /* #ifdef CONFIG_USERSPACE */
-	xxk_print("XXK: Exit!(Please poweroff or kill the qemu process)\n");
+	xxk_print("XXK: Exit!(Please Ctrl+a,x or kill the qemu process)\n");
 	while(1);
 }
 

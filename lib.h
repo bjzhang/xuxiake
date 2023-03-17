@@ -20,7 +20,8 @@
 
 void xxk_putchar(char c);
 void xxk_print(char *s);
-void xxk_print_hex(unsigned int num);
+void xxk_print_hex32(u32 num);
+void xxk_print_hex64(u64 num);
 void memcpy(void *dst, void *src, s32 size);
 
 #endif /* #ifndef __LIB_H__ */

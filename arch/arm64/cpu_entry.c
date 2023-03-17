@@ -55,15 +55,15 @@ s32 svc_handler(unsigned long esr, struct trap_regs *t)
 	char *str = NULL;
 	int is_handled = 0;
 
-	xxk_debug("SVC from aarch64 EE\n");
+	xxk_debug("XXK: SVC from aarch64 EE\n");
 	if (t->x8 == 64) {
-		xxk_debug("write syscall\n");
+		xxk_debug("XXK: write syscall\n");
 		str = (char*)t->x1;
 		xxk_print(str);
 		is_handled = 1;
 	} else {
-		xxk_print("ERROR: could not handle this syscall: ");
-		xxk_print_hex(t->x8);
+		xxk_print("XXK: ERROR: could not handle this syscall: ");
+		xxk_print_hex64(t->x8);
 		xxk_print("\n");
 	}
 	return is_handled;
@@ -76,12 +76,14 @@ void trap_handler(unsigned long esr, struct trap_regs *t)
 	unsigned long iss = (esr >> ISS_SHIFT) & ISS_MASK;
 	s32 is_handled = 0;
 
-	xxk_debug("enter svc esr: ");
-	xxk_debug_hex(esr);
+	xxk_debug("XXK: enter svc esr: ");
+	xxk_debug_hex64(esr);
 	xxk_debug(", ec: ");
-	xxk_debug_hex(ec);
+	xxk_debug_hex32(ec);
 	xxk_debug(", iss: ");
-	xxk_debug_hex(iss);
+	xxk_debug_hex32(iss);
+	xxk_debug(", elr: ");
+	xxk_debug_hex64(t->lr);
 	xxk_debug("\n");
 	switch(ec) {
 	case EL_DA_LOW:
@@ -100,14 +102,14 @@ void trap_handler(unsigned long esr, struct trap_regs *t)
 		is_handled = svc_handler(esr, t);
 		break;
 	default:
-		xxk_print("Do not regconize this exeption!\n");
+		xxk_print("XXK: Do not regconize this exeption!\n");
 		break;
 	}
 
 	if (is_handled) {
-		xxk_debug("Exception return\n");
+		xxk_debug("XXK: Exception return\n");
 	} else {
-		xxk_error("Could not handle this exception. stall...\n");
+		xxk_error("XXK: Could not handle this exception. stall...\n");
 		while(1);
 	}
 }
@@ -121,7 +123,7 @@ void setup_exception_vector()
 			     : "memory");
 
 	xxk_info("Current exception level: ");
-	xxk_info_hex(get_currentel() >> 2);
+	xxk_info_hex32(get_currentel() >> 2);
 	xxk_info("\n");
 }
 
