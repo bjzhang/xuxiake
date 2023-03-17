@@ -129,7 +129,7 @@
 
 
 enum mair_attr_idx {MAIR_NORMAL_IDX, MAIR_DEVICE_IDX, MAIR_IDX_VALID_MAX};
-enum memory_type {MEMORY_KERNEL, MEMORY_DEVICE, MEMORY_USER, MEMORY_TYPE_MAX};
+enum memory_type {MEMORY_KERNEL, MEMORY_DEVICE, MEMORY_USER, MEMORY_USER_DATA, MEMORY_TYPE_MAX};
 
 /**
  * Memory barrier
@@ -394,6 +394,9 @@ static s32 map_memory_l1_block(u64 vaddr, u64 paddr, u64 size, enum memory_type 
 		SET_BITS(entry, PT_L1_AF_1, PT_L1_AF_MASK, PT_L1_AF_SHIFT);
 		t = MAIR_DEVICE_IDX;
 	} else if (MEMORY_USER == t) {
+		SET_BITS(entry, PT_L1_AP_RO_RO, PT_L1_AP_MASK , PT_L1_AP_SHIFT);
+		t = MAIR_NORMAL_IDX;
+	} else if (MEMORY_USER_DATA == t) {
 		SET_BITS(entry, PT_L1_AP_RW_RW, PT_L1_AP_MASK , PT_L1_AP_SHIFT);
 		t = MAIR_NORMAL_IDX;
 	}
@@ -441,6 +444,11 @@ static s32 map_memory_device(u64 addr, u64 size)
 static s32 map_memory_user(u64 addr, u64 size)
 {
 	return map_memory_flat(addr, size, MEMORY_USER);
+}
+
+static s32 map_memory_user_data(u64 addr, u64 size)
+{
+	return map_memory_flat(addr, size, MEMORY_USER_DATA);
 }
 
 s32 da_handler(unsigned long esr, struct trap_regs *t)
@@ -644,7 +652,11 @@ void mmu_init()
 	if (ret < 0)
 		return;
 
-	ret = map_memory_user(USER_MEM_START, USER_STACK_TOP - USER_MEM_START);
+	ret = map_memory_user(USER_MEM_START, USER_DATA_START - USER_MEM_START);
+	if (ret < 0)
+		return;
+
+	ret = map_memory_user_data(USER_DATA_START, USER_STACK_SIZE);
 	if (ret < 0)
 		return;
 
