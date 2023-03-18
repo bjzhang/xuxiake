@@ -3,6 +3,11 @@
 #ifndef __ASSEMBLY__
 #include <asm-generic/errno.h>
 #include <lib.h>
+#include <compiler.h>
+
+#define LINUX_REBOOT_MAGIC1		0xFEE1DEAD
+#define LINUX_REBOOT_MAGIC2		672274793
+#define LINUX_REBOOT_CMD_POWER_OFF      0x4321FEDC
 
 #ifdef DEBUG
 #warning "DEBUG mode: it may lead to lots of output"
@@ -59,5 +64,10 @@ int ia_handler(unsigned long esr, struct trap_regs *t);
  * The overall entry of XU xiake
  */
 void cpu_entry(void);
+/**
+ * architecture relative initialization
+ * e.g. psci init for aarch64
+ */
+void arch_init(void);
 #endif /* #ifndef __ASSEMBLY__ */
 #endif /* #ifndef __XUXIAKE_H */

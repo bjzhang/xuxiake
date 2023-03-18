@@ -13,6 +13,7 @@ Right now, XU xiake only support ARM64 in qemu(qemu-system-aarch64). I plan to s
 Execute the following command to build MMU or userspace support respectively.
 `make CFLAGS="-DCONFIG_MMU"``
 `make CFLAGS="-DCONFIG_USERSPACE -DCONFIG_SYSCALL"`
+`make CFLAGS="-DCONFIG_USERSPACE -DCONFIG_SYSCALL -DCONFIG_MMU"`
 
 ### Expected output
 ```

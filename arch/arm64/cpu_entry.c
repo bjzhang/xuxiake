@@ -26,6 +26,7 @@ static void user_program(void);
 #endif /* #ifdef CONFIG_USERSPACE */
 #ifdef CONFIG_SYSCALL
 extern void print(char *str);
+extern void poweroff();
 #endif /* #ifdef CONFIG_SYSCALL */
 
 static u64 get_currentel(void)
@@ -46,7 +47,9 @@ static void user_program(void)
 	xxk_print("try to output from userspace by accessing uart register directly\n");
 #ifdef CONFIG_SYSCALL
 	print("try to output from userspace by write syscall\n");
+	poweroff();
 #endif /* #ifdef CONFIG_SYSCALL */
+	xxk_print("ERROR: should not come here.\n");
 }
 #endif /* #ifdef CONFIG_USERSPACE`*/
 
@@ -56,15 +59,30 @@ s32 svc_handler(unsigned long esr, struct trap_regs *t)
 	int is_handled = 0;
 
 	xxk_debug("XXK: SVC from aarch64 EE\n");
-	if (t->x8 == 64) {
-		xxk_debug("XXK: write syscall\n");
-		str = (char*)t->x1;
-		xxk_print(str);
-		is_handled = 1;
-	} else {
-		xxk_print("XXK: ERROR: could not handle this syscall: ");
-		xxk_print_hex64(t->x8);
-		xxk_print("\n");
+	switch(t->x8) {
+		case 64:
+			xxk_debug("XXK: write syscall\n");
+			str = (char*)t->x1;
+			xxk_print(str);
+			is_handled = 1;
+			break;
+		case 142:
+			xxk_debug("XXK: reboot syscall\n");
+			if (t->x0 == LINUX_REBOOT_MAGIC1 && t->x1 == LINUX_REBOOT_MAGIC2) {
+				xxk_debug("XXK: reboot syscall: magic number check pass\n");
+				if (t->x2 == LINUX_REBOOT_CMD_POWER_OFF) {
+					xxk_debug("XXK: reboot syscall, action: poweroff\n");
+					psci_sys_poweroff();
+					xxk_error("XXK: should not come here\n");
+					is_handled = 1;
+				}
+			}
+			break;
+		default:
+			xxk_print("XXK: ERROR: could not handle this syscall: ");
+			xxk_print_hex64(t->x8);
+			xxk_print("\n");
+			break;
 	}
 	return is_handled;
 }
@@ -84,6 +102,9 @@ void trap_handler(unsigned long esr, struct trap_regs *t)
 	xxk_debug_hex32(iss);
 	xxk_debug(", elr: ");
 	xxk_debug_hex64(t->lr);
+	xxk_debug("\n");
+	xxk_debug("Current exception level: ");
+	xxk_debug_hex32(get_currentel() >> 2);
 	xxk_debug("\n");
 	switch(ec) {
 	case EL_DA_LOW:
@@ -147,3 +168,9 @@ void jump_to_user_mode()
 	xxk_print("ERROR: Should not come here!\n");
 }
 #endif /* #ifdef CONFIG_USERSPACE */
+
+void arch_init()
+{
+	psci_init();
+}
+// vim: tabstop=8 shiftwidth=8 cindent

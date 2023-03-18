@@ -6,6 +6,7 @@
 
 void cpu_entry(void)
 {
+	arch_init();
 	xxk_print("XXK: Hello XU Xiake\n");
 	setup_exception_vector();
 	xxk_print("XXK: After set vector\n");

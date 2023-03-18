@@ -7,7 +7,7 @@ CROSS_COMPILE ?= aarch64-linux-
 
 #CFLAGS=-Wall -c -mcmodel=medany -march=rv64imafdc -mabi=lp64d
 #CFLAGS=-Wall -c -mcmodel=medany -march=rv64imafdc -mabi=lp64d
-override CFLAGS += -Wall -I. -Iarch/${ARCH}/include -DDEBUG
+override CFLAGS += -Wall -I. -Iarch/${ARCH}/include
 
 ifeq ($(ARCH), arm64)
 	QEMU_CMD ?= qemu-system-aarch64
@@ -27,12 +27,19 @@ all:
 	${CROSS_COMPILE}gcc -ggdb -c -o arch/${ARCH}/lib.o arch/${ARCH}/lib.c -ffreestanding ${CFLAGS}
 	${CROSS_COMPILE}gcc -ggdb -c -o arch/${ARCH}/cpu_entry.o arch/${ARCH}/cpu_entry.c -ffreestanding ${CFLAGS}
 	${CROSS_COMPILE}gcc -ggdb -c -o arch/${ARCH}/mmu.o arch/${ARCH}/mmu.c -ffreestanding ${CFLAGS}
+	${CROSS_COMPILE}gcc -ggdb -c -o arch/${ARCH}/poweroff.o arch/${ARCH}/poweroff.c -ffreestanding ${CFLAGS}
 	${CROSS_COMPILE}gcc -ggdb -c -o arch/${ARCH}/print.o arch/${ARCH}/print.c -ffreestanding ${CFLAGS}
+	${CROSS_COMPILE}gcc -ggdb -c -o arch/${ARCH}/psci.o arch/${ARCH}/psci.c -ffreestanding ${CFLAGS}
 #	${CROSS_COMPILE}gcc -ggdb -c -o gpio.o gpio.c -ffreestanding ${CFLAGS}
 #	${CROSS_COMPILE}gcc -o xuxiake.elf -nostartfiles -Wl,--gc-sections,-Map=xuxiake.map,-cref,-u,_start -T arch/${ARCH}/link.lds head.o cpu_entry.o gpio.o lib.o ${CFLAGS}
-	${CROSS_COMPILE}gcc -o xuxiake.elf -nostartfiles -Wl,--gc-sections,-Map=xuxiake.map,-cref,-u,_start -T arch/${ARCH}/link.lds arch/${ARCH}/head.o arch/${ARCH}/lib.o arch/${ARCH}/cpu_entry.o arch/${ARCH}/print.o arch/${ARCH}/mmu.o lib.o cpu_entry.o ${CFLAGS}
+	${CROSS_COMPILE}gcc -o xuxiake.elf -nostartfiles -Wl,--gc-sections,-Map=xuxiake.map,-cref,-u,_start -T arch/${ARCH}/link.lds arch/${ARCH}/head.o arch/${ARCH}/lib.o arch/${ARCH}/cpu_entry.o arch/${ARCH}/poweroff.o arch/${ARCH}/print.o  arch/${ARCH}/psci.o arch/${ARCH}/mmu.o lib.o cpu_entry.o ${CFLAGS}
 	${CROSS_COMPILE}objcopy -O binary xuxiake.elf xuxiake.bin
 	${CROSS_COMPILE}objdump -Sx xuxiake.elf > xuxiake.S
 
 qemu:
 	${QEMU_CMD} -M ${MACHINE} -cpu ${CPU} -m 3072M -smp ${CORES} -kernel xuxiake.bin -nographic ${DEBUG}
+
+clean:
+	rm -f ./lib.o ./arch/arm64/lib.o ./arch/arm64/poweroff.o ./arch/arm64/print.o ./arch/arm64/psci.o ./arch/arm64/head.o ./arch/arm64/cpu_entry.o ./arch/arm64/mmu.o ./cpu_entry.o
+	rm -f xuxiake.elf xuxiake.S xuxiake.bin
+

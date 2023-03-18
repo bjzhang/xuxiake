@@ -1,1 +1,1 @@
-/home/bamvor/works/source/ARM_workshop/1_system_point_view/1_2_asm/print.c
+../../../ARM_workshop/1_system_point_view/1_2_asm/print.c

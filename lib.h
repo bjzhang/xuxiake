@@ -18,7 +18,8 @@
 	(val) = (val) & (mask);				\
 }
 
-void xxk_putchar(char c);
+u8 xxk_getchar(void);
+void xxk_putchar(u8 c);
 void xxk_print(char *s);
 void xxk_print_hex32(u32 num);
 void xxk_print_hex64(u64 num);
